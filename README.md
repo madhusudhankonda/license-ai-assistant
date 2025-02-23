@@ -40,6 +40,7 @@ AI License Assistant is a Streamlit-based application that helps developers unde
 
 ## Usage
 
+### Running Locally
 1. **Start the application:**
 
    ```bash
@@ -47,6 +48,20 @@ AI License Assistant is a Streamlit-based application that helps developers unde
    ```
 
 2. **Open your browser and navigate to `http://localhost:8501`.**
+
+### Running with Docker
+
+1. **Build and start the container:**
+   ```bash
+   docker compose up -d --build
+   ```
+
+2. **Open your browser and navigate to `http://localhost:8501`.**
+
+3. **Stop the container:**
+   ```bash
+   docker compose down
+   ```
 
 3. **Use the different tabs to:**
    - Analyze common software licenses.
