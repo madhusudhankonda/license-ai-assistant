@@ -1,17 +1,40 @@
-from openai import OpenAI
+import requests
 from typing import List, Dict
-from config import OPENAI_API_KEY
+from config import OPENROUTER_API_KEY, OPENROUTER_API_URL, DEFAULT_MODEL
 
+GITHUB_URL = "https://github.com/madhusudhankonda/license-ai-assistant"
 class LicenseAnalyzer:
-    def __init__(self):
+    def __init__(self, model: str = DEFAULT_MODEL):
         self.common_licenses = [
             "MIT", "GPL-3.0", "Apache-2.0", "BSD-3-Clause", 
             "LGPL-3.0", "MPL-2.0", "AGPL-3.0"
         ]
-        # Initialize OpenAI client with API key
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
-    
-    def analyze_license(self, license_name: str) -> Dict:
+        self.headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "HTTP-Referer": GITHUB_URL, 
+            "Content-Type": "application/json"
+        }
+        self.model = model
+
+    def _make_request(self, prompt: str) -> str:
+        """Make a request to OpenRouter API"""
+        data = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        
+        response = requests.post(
+            OPENROUTER_API_URL,
+            headers=self.headers,
+            json=data
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"API request failed: {response.text}")
+            
+        return response.json()["choices"][0]["message"]["content"]
+
+    def analyze_license(self, license_name: str) -> str:
         """Analyze a specific license and return its details"""
         prompt = f"""
             Analyze the {license_name} software license and provide:
@@ -21,19 +44,14 @@ class LicenseAnalyzer:
             4. Compliance Requirements: Steps necessary to comply with the license.
             5. Use Case Suitability: Where this license is best applied.
 
-            Format the response in markdown. If the license is not recognized, return: "License not found."
+            If the license is not recognized, return: "License not found."
             """
-        response = self.client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        
-        return response.choices[0].message.content
+        return self._make_request(prompt)
     
     def compare_licenses(self, license1: str, license2: str) -> str:
         """Compare two licenses and highlight key differences"""
 
-        prompt = f"""Compare the following two software licenses: **{license1}** vs **{license2}**.
+        prompt = f"""Compare the following two software licenses: {license1} vs {license2}.
             Provide a side-by-side breakdown covering:
             - Summary: A one-liner summary of each license.
             - Key Permissions: What users can do under each license.
@@ -41,14 +59,9 @@ class LicenseAnalyzer:
             - Best Fit Use Cases: When to choose each license.
             - Legal Considerations: Any important legal obligations.
 
-            Ensure the response is formatted in markdown tables for clarity."""
+            Ensure the response is formatted appropriately in tables for clarity."""
         
-        response = self.client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        
-        return response.choices[0].message.content
+        return self._make_request(prompt)
     
     def analyze_uploaded_license(self, text: str) -> str:
         """Analyze custom license text"""
@@ -65,12 +78,7 @@ class LicenseAnalyzer:
         
         Format the response in markdown."""
         
-        response = self.client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        
-        return response.choices[0].message.content
+        return self._make_request(prompt)
     
     def get_general_guidance(self, question: str) -> str:
         """Provide guidance for general licensing questions"""
@@ -78,7 +86,7 @@ class LicenseAnalyzer:
         prompt = f"""
             Provide a clear, accurate, and concise response to the following software licensing question:
 
-            **Question:** {question}
+            Question: {question}
 
             Ensure the response includes:
             1. A direct answer to the question.
@@ -86,13 +94,7 @@ class LicenseAnalyzer:
             3. Legal or compliance considerations (if necessary).
             4. Actionable recommendations (if applicable).
 
-            Format the response in markdown for readability.
+            Format the response is formatted for readability.
         """
 
-
-        response = self.client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        
-        return response.choices[0].message.content 
+        return self._make_request(prompt) 

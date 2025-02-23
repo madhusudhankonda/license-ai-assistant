@@ -1,5 +1,6 @@
 import streamlit as st
 from pathlib import Path
+from config import AVAILABLE_MODELS
 
 def render_sidebar():
     """Render the application sidebar"""
@@ -11,6 +12,15 @@ def render_sidebar():
             st.image(logo_path, width=200)
         
         st.title("📜 AI License Assistant")
+
+        # Model selection
+        selected_model = st.selectbox(
+            "Select AI Model",
+            options=list(AVAILABLE_MODELS.keys()),
+            index=0,
+            help="Choose the AI model to use for analysis"
+        )
+        
         st.markdown("""
         AI License Assistant is a tool that helps you understand and compare software licenses.
         ### Features
