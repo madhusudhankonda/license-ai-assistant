@@ -1,0 +1,12 @@
+[theme]
+# Toned down colors
+primaryColor = "#FFC857"        # Softer amber gold
+backgroundColor = "#253B59"      # Slightly lighter navy blue
+secondaryBackgroundColor = "#334866"  # Lighter panels/cards
+textColor = "#F1FAEE"           # Off-white text for better readability
+font = "sans serif"
+
+# Other styling elements
+[server]
+enableCORS = false
+enableXsrfProtection = false 
