@@ -23,13 +23,14 @@ def apply_custom_styling():
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
         
         .logo-image {
-            width: 60px;
-            height: 60px;
-            margin-right: 10px;
+            height: 80px;
+            margin-right: 15px;
+            object-fit: contain;
         }
         
         .app-title {
@@ -38,7 +39,7 @@ def apply_custom_styling():
             font-size: 2.5rem;
             font-weight: 600;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            margin-bottom: 1.5rem;
+            margin: 0;
         }
         
         /* Body/Background styling */
@@ -182,6 +183,23 @@ def apply_custom_styling():
         ::selection {
             background-color: rgba(255,200,87,0.4);
             color: #F1FAEE;
+        }
+        
+        /* Make sure the header is responsive */
+        @media (max-width: 768px) {
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo-image {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .app-title {
+                font-size: 2rem !important;
+            }
         }
     </style>
     """, unsafe_allow_html=True) 
